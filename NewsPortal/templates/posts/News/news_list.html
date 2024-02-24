@@ -11,7 +11,9 @@
     <h1>Новости</h1>
     <hr>
 
-    <a href="{% url 'article_create' %}">Добавить новость</a>
+    {% if perms.news.add_post %}
+        <a href="{% url 'article_create' %}">Добавить новость</a>
+    {% endif %}
 
     {% if news %}
         <table>
@@ -19,7 +21,9 @@
                 <td> Заголовок </td>
                 <td> Дата публикации </td>
                 <td> Текст новости </td>
-                <td> Действия </td>
+                {% if perms.news.change_post or perms.news.delete_post %}
+                    <td> Действия </td>
+                {% endif %}
             </tr>
             {% for post in news %}
                 <tr>
@@ -27,8 +31,12 @@
                     <td>{{ post.date|date:'M d Y' }}</td>
                     <td>{{ post.text|truncatechars:20|censor }}</td>
                     <td>
-                        <a href="{% url 'news_edit' post.id %}">Изменить</a>
-                        <a href="{% url 'news_delete' post.id %}">Удалить</a>
+                        {% if perms.news.change_post %}
+                            <a href="{% url 'news_edit' post.id %}">Изменить</a>
+                        {% endif %}
+                        {% if perms.news.delete_post %}
+                            <a href="{% url 'news_delete' post.id %}">Удалить</a>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}

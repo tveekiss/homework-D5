@@ -10,8 +10,9 @@
 {% block content %}
     <h1>Статьи</h1>
     <hr>
-
-        <a href="{% url 'article_create' %}">Добавить статью</a>
+        {% if perms.news.add_post %}
+            <a href="{% url 'article_create' %}">Добавить статью</a>
+        {% endif %}
 
     {% if articles %}
         <table>
@@ -19,7 +20,9 @@
                 <td> Заголовок </td>
                 <td> Дата публикации </td>
                 <td> Текст статьи </td>
-                <td> Действия </td>
+                {% if perms.news.change_post or perms.news.delete_post %}
+                    <td> Действия </td>
+                {% endif %}
             </tr>
             {% for post in articles %}
                 <tr>
@@ -27,8 +30,12 @@
                     <td>{{ post.date|date:'M d Y' }}</td>
                     <td>{{ post.text|truncatechars:20|censor }}</td>
                     <td>
-                        <a href="{% url 'article_edit' post.id %}">Изменить</a>
-                        <a href="{% url 'article_delete' post.id %}">Удалить</a>
+                        {% if perms.news.change_post %}
+                            <a href="{% url 'article_edit' post.id %}">Изменить</a>
+                        {% endif %}
+                        {% if perms.news.delete_post %}
+                            <a href="{% url 'article_delete' post.id %}">Удалить</a>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}

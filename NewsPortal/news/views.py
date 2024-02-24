@@ -1,4 +1,5 @@
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView
 from django_filters.views import FilterView
 from .models import Post
@@ -37,7 +38,8 @@ class NewsDetail(DetailView):
     context_object_name = 'new'
 
 
-class CreateNews(CreateView):
+class CreateNews(PermissionRequiredMixin, CreateView):
+    permission_required = 'news.add_post'
     form_class = Newsform
     model = Post
     template_name = 'posts/news/news_create.html'
@@ -49,14 +51,16 @@ class CreateNews(CreateView):
         return super().form_valid(form)
 
 
-class EditNews(UpdateView):
+class EditNews(PermissionRequiredMixin, UpdateView):
+    permission_required = 'news.change_post'
     form_class = Newsform
     model = Post
     template_name = 'posts/news/news_create.html'
     success_url = reverse_lazy('news')
 
 
-class DeleteNews(DeleteView):
+class DeleteNews(PermissionRequiredMixin, DeleteView):
+    permission_required = 'news.delete_post'
     model = Post
     template_name = 'posts/news/news_delete.html'
     success_url = reverse_lazy('news')
@@ -79,7 +83,8 @@ class ArticleDetail(DetailView):
     context_object_name = 'article'
 
 
-class CreateArticle(CreateView):
+class CreateArticle(PermissionRequiredMixin, CreateView):
+    permission_required = 'news.add_post'
     form_class = ArticleForm
     model = Post
     template_name = 'posts/articles/article_create.html'
@@ -91,7 +96,8 @@ class CreateArticle(CreateView):
         return super().form_valid(form)
 
 
-class EditArticle(UpdateView):
+class EditArticle(PermissionRequiredMixin, UpdateView):
+    permission_required = 'news.change_post'
     form_class = Newsform
     model = Post
     template_name = 'posts/articles/article_create.html'
@@ -99,6 +105,7 @@ class EditArticle(UpdateView):
 
 
 class DeleteArticle(DeleteView):
+    permission_required = 'news.delete_post'
     model = Post
     template_name = 'posts/articles/article_delete.html'
     success_url = reverse_lazy('articles')

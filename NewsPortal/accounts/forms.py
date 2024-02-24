@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from allauth.account.forms import SignupForm
+from django.contrib.auth.models import Group
 
 
 class SignUpForm(UserCreationForm):
@@ -18,3 +20,11 @@ class SignUpForm(UserCreationForm):
             'password1',
             'password2',
         )
+
+
+class CustomSignupForm(SignupForm):
+    def save(self, request):
+        user = super().save(request)
+        authors = Group.objects.get(name="authors")
+        user.groups.add(authors)
+        return user
