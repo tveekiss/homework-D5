@@ -1,0 +1,18 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %}
+
+
+{% block title %}
+{{ article.title|censor }}
+{% endblock title %}
+
+
+{% block content %}
+    <h1>{{ article.title|censor }}</h1>
+    <p>{{ article.date|date:"d.m.Y" }}</p>
+    <hr>
+    <p>{{ article.text|censor }}</p>
+    <a href="{% url 'article_edit' post.id %}">Изменить</a>
+    <a href="{% url 'article_delete' post.id %}">Удалить</a>
+{% endblock content %}
