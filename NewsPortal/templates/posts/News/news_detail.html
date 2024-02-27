@@ -13,6 +13,10 @@
     <p>{{ news.date|date:"d.m.Y" }}</p>
     <hr>
     <p>{{ news.text|censor }}</p>
-    <a href="{% url 'news_edit' post.id %}">Изменить</a>
-    <a href="{% url 'news_delete' post.id %}">Удалить</a>
+    {% if perms.news.create_post %}
+        <a href="{% url 'news_edit' news.id %}">Изменить</a>
+    {% endif %}
+    {% if perms.news.delete_post %}
+        <a href="{% url 'news_delete' news.id %}">Удалить</a>
+    {% endif %}
 {% endblock content %}

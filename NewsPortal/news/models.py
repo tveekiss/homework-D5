@@ -69,6 +69,11 @@ class Post(models.Model):
     def __str__(self):
         return f'{self.title}: {self.text}'
 
+    def get_absolute_url(self):
+        post = 'news' if self.position == 'NW' else 'articles'
+        return 'http://127.0.0.1:8000/' + post + '/' + str(self.pk) + '/'
+
+
 
 class PostCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
@@ -90,3 +95,7 @@ class Comment(models.Model):
         self.comment_rating -= 1
         self.save()
 
+
+class Subscriber(models.Model):
+    category = models.ForeignKey(to=Category, on_delete=models.CASCADE, related_name='subscribers')
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='subscribers')

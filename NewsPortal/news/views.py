@@ -2,9 +2,15 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView
 from django_filters.views import FilterView
-from .models import Post
+from .models import Post, Author
 from .filters import PostFilters
 from .forms import Newsform, ArticleForm
+
+from django.contrib.auth.decorators import login_required
+from django.db.models import Exists, OuterRef
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_protect
+from .models import Subscriber, Category
 
 
 # ===============POSTS===============
@@ -47,6 +53,13 @@ class CreateNews(PermissionRequiredMixin, CreateView):
 
     def form_valid(self, form):
         news = form.save(commit=False)
+        if Author.objects.get(user=self.request.user) is not None:
+            print('Такой автор есть')
+            news.author = Author.objects.get(user=self.request.user)
+        else:
+            print('Такого автора нету')
+            author = Author.objects.create(user=self.request.user)
+            news.author = author
         news.position = 'NW'
         return super().form_valid(form)
 
@@ -92,6 +105,13 @@ class CreateArticle(PermissionRequiredMixin, CreateView):
 
     def form_valid(self, form):
         news = form.save(commit=False)
+        if Author.objects.get(user=self.request.user) is not None:
+            print('Такой автор есть')
+            news.author = Author.objects.get(user=self.request.user)
+        else:
+            print('Такого автора нету')
+            author = Author.objects.create(user=self.request.user)
+            news.author = author
         news.position = 'AR'
         return super().form_valid(form)
 
@@ -109,3 +129,37 @@ class DeleteArticle(DeleteView):
     model = Post
     template_name = 'posts/articles/article_delete.html'
     success_url = reverse_lazy('articles')
+
+
+# ===============SUBSCRIPTIONS===============
+
+
+@login_required
+@csrf_protect
+def subscriptions(request):
+    if request.method == 'POST':
+        category_id = request.POST.get('category_id')
+        category = Category.objects.get(id=category_id)
+        action = request.POST.get('action')
+
+        if action == 'subscribe':
+            Subscriber.objects.create(user=request.user, category=category)
+        elif action == 'unsubscribe':
+            Subscriber.objects.filter(
+                user=request.user,
+                category=category,
+            ).delete()
+
+    categories_with_subscriptions = Category.objects.annotate(
+        user_subscribed=Exists(
+            Subscriber.objects.filter(
+                user=request.user,
+                category=OuterRef('pk'),
+            )
+        )
+    ).order_by('category')
+    return render(
+        request,
+        'subscriptions.html',
+        {'categories': categories_with_subscriptions},
+    )

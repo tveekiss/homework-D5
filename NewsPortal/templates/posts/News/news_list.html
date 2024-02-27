@@ -12,7 +12,7 @@
     <hr>
 
     {% if perms.news.add_post %}
-        <a href="{% url 'article_create' %}">Добавить новость</a>
+        <a href="{% url 'news_create' %}">Добавить новость</a>
     {% endif %}
 
     {% if news %}
