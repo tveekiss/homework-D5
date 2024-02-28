@@ -26,9 +26,9 @@ def post_created(sender, instance, action, model, pk_set, **kwargs):
             f'Читать далее: {instance.get_absolute_url()}'
         )
         html_content = (
-            f'<h1>{instance.title}</h1><br>'
-            f'<p>{instance.preview()}</p>'
-            f'<a href="{instance.get_absolute_url()}">Читать далее</a>'
+            f'<h1>{instance.title}</h1>'
+            f'<p>{instance.preview()}'
+            f'<a href="{instance.get_absolute_url()}">Читать далее</a></p>'
         )
         for email, categories in subscribers_emails.items():
             title = 'Новая статья ' if instance.position == "AR" else 'Новая новость '
@@ -38,4 +38,5 @@ def post_created(sender, instance, action, model, pk_set, **kwargs):
             print(title, '\n', text_content)
             msg = EmailMultiAlternatives(title, text_content, 'egor-shiryaev2013@yandex.ru', [email])
             msg.attach_alternative(html_content, 'text/html')
+            msg.send()
 
