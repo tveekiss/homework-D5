@@ -3,7 +3,7 @@ from .views import (
     PostList, SearchPostList,
     NewsList, CreateNews, EditNews, DeleteNews, NewsDetail,
     ArticleList, ArticleDetail, CreateArticle, EditArticle, DeleteArticle,
-    subscriptions
+    subscriptions,
 )
 urlpatterns = [
     path('', PostList.as_view(), name='home'),

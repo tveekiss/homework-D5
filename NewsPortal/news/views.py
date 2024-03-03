@@ -1,6 +1,7 @@
+from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView
+from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView, View
 from django_filters.views import FilterView
 from .models import Post, Author
 from .filters import PostFilters
@@ -12,6 +13,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
 from .models import Subscriber, Category
 
+from .tasks import mailing
 
 # ===============POSTS===============
 class PostList(ListView):
@@ -163,3 +165,5 @@ def subscriptions(request):
         'subscriptions.html',
         {'categories': categories_with_subscriptions},
     )
+
+
