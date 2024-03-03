@@ -71,8 +71,3 @@ def mailing():
         msg = EmailMultiAlternatives(subject, text_content, 'egor-shiryaev2013@yandex.ru', [user_email])
         msg.attach_alternative(html_content, 'text/html')
         msg.send()
-
-
-@shared_task
-def test():
-    print('hello')
